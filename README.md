@@ -2,6 +2,8 @@
 
 This repository contains a Golang's implementation of a rate limiter based on a Redis DB.
 
+This implementation is based on the Redis Best Practices for rate limiting [explained here](https://redis.com/redis-best-practices/basic-rate-limiting/#:~:text=This%20service%20states%20that%20it,after%20one%20minute%20as%20well.).
+
 ## Run the example
 
 To run the example you must have docker installed on your machine. 

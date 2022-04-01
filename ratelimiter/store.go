@@ -21,6 +21,9 @@ func NewStore(redisClient *redis.Client) *Store {
 // GetCounter returns the counter value for the given request key
 func (s *Store) GetCounter(ctx context.Context, requestKey string) (int, error) {
 	val, err := s.redisClient.Get(ctx, requestKey).Int()
+	if err == redis.Nil {
+		return 0, nil
+	}
 	if err != nil {
 		return 0, err
 	}

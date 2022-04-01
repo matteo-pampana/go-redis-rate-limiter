@@ -17,7 +17,8 @@ func TestRateLimiter_CheckRequest(t *testing.T) {
 		config      RateLimiterConfig
 	}
 	type args struct {
-		ctx context.Context
+		ctx  context.Context
+		keys []string
 	}
 	tests := []struct {
 		name    string
@@ -35,13 +36,13 @@ func TestRateLimiter_CheckRequest(t *testing.T) {
 					return mockStore
 				},
 				config: RateLimiterConfig{
-					KeyItems:        []string{"key1", "key2"},
 					MaxRequests:     10,
 					RefreshInterval: time.Second,
 				},
 			},
 			args: args{
-				ctx: testCtx,
+				ctx:  testCtx,
+				keys: []string{"key1", "key2"},
 			},
 			wantErr: false,
 		},
@@ -54,13 +55,13 @@ func TestRateLimiter_CheckRequest(t *testing.T) {
 					return mockStore
 				},
 				config: RateLimiterConfig{
-					KeyItems:        []string{"key1", "key2"},
 					MaxRequests:     10,
 					RefreshInterval: time.Second,
 				},
 			},
 			args: args{
-				ctx: testCtx,
+				ctx:  testCtx,
+				keys: []string{"key1", "key2"},
 			},
 			wantErr: true,
 		},
@@ -73,13 +74,13 @@ func TestRateLimiter_CheckRequest(t *testing.T) {
 					return mockStore
 				},
 				config: RateLimiterConfig{
-					KeyItems:        []string{"key1", "key2"},
 					MaxRequests:     10,
 					RefreshInterval: time.Second,
 				},
 			},
 			args: args{
-				ctx: testCtx,
+				ctx:  testCtx,
+				keys: []string{"key1", "key2"},
 			},
 			wantErr: true,
 		},
@@ -92,7 +93,7 @@ func TestRateLimiter_CheckRequest(t *testing.T) {
 
 			mockedStore := tt.fields.mockedStore(mockCtrl)
 			r := NewRateLimiter(mockedStore, tt.fields.config)
-			err := r.CheckRequest(tt.args.ctx)
+			err := r.CheckRequest(tt.args.ctx, tt.args.keys)
 			assert.Equal(t, tt.wantErr, err != nil)
 		})
 	}
@@ -113,7 +114,6 @@ func TestNewRateLimiter(t *testing.T) {
 			args: args{
 				store: NewMockstore(gomock.NewController(t)),
 				config: RateLimiterConfig{
-					KeyItems:        []string{"key1", "key2"},
 					MaxRequests:     10,
 					RefreshInterval: time.Second,
 				},
@@ -121,11 +121,9 @@ func TestNewRateLimiter(t *testing.T) {
 			want: &RateLimiter{
 				store: NewMockstore(gomock.NewController(t)),
 				config: RateLimiterConfig{
-					KeyItems:        []string{"key1", "key2"},
 					MaxRequests:     10,
 					RefreshInterval: time.Second,
 				},
-				bucketKey: "key1#key2",
 			},
 		},
 		{
@@ -136,11 +134,9 @@ func TestNewRateLimiter(t *testing.T) {
 			want: &RateLimiter{
 				store: NewMockstore(gomock.NewController(t)),
 				config: RateLimiterConfig{
-					KeyItems:        []string{DEFAULT_KEY},
 					MaxRequests:     DEFAULT_MAX_REQUESTS,
 					RefreshInterval: DEFAULT_REFRESH_INTERVAL,
 				},
-				bucketKey: DEFAULT_KEY,
 			},
 		},
 	}

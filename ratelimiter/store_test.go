@@ -37,6 +37,19 @@ func TestStore_GetCounter(t *testing.T) {
 			want: 0,
 		},
 		{
+			name: "when redis return nil, return 0",
+			mockRedis: func() *redis.Client {
+				db, mock := redismock.NewClientMock()
+				mock.ExpectGet("key1#key2").SetErr(redis.Nil)
+				return db
+			},
+			args: args{
+				ctx:        context.Background(),
+				requestKey: "key1#key2",
+			},
+			want: 0,
+		},
+		{
 			name: "error when redis get failed",
 			mockRedis: func() *redis.Client {
 				db, mock := redismock.NewClientMock()

@@ -1,0 +1,24 @@
+version: "3.9"
+services:
+  redis:
+    container_name: ratelimiter-redis
+    image: redis
+    ports:
+      - "6379:6379"
+    
+  webserver:
+    container_name: ratelimiter-webserver
+    environment:
+      - RATE_LIMITER_MAX_REQUESTS=10
+      - RATE_LIMITER_REFRESH_INTERVAL=1m
+      - REDIS_URI=ratelimiter-redis:6379
+      - SERVER_PORT=8081
+    image: golang
+    ports:
+      - 8081:8081
+    volumes:
+      - ..:/webserver
+    working_dir: /webserver
+    command: bash -c "go mod vendor && go run example/main.go"
+    depends_on:
+      - ratelimiter-redis

@@ -18,7 +18,7 @@ services:
       - 8081:8081
     volumes:
       - ..:/webserver
-    working_dir: /webserver
-    command: bash -c "go mod vendor && go run example/main.go"
+    working_dir: /webserver/example
+    command: bash -c "go mod vendor && go run main.go"
     depends_on:
       - ratelimiter-redis
